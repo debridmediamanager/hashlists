@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Debrid Media Manager Hash List</title>
+		<style>
+			#panel {
+				height: 50px;
+				background-color: #f2f2f2;
+				display: flex;
+				align-items: center;
+				padding: 0 10px;
+			}
+
+			#panel span {
+				flex-grow: 1;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				margin-right: 10px;
+			}
+
+			#panel button {
+				margin-right: 10px;
+			}
+
+			iframe {
+				border: none;
+				position: absolute;
+				top: 50px;
+				left: 0;
+				width: 100%;
+				height: calc(100% - 50px);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="panel">
+			<span id="currentPath"></span>
+			<button id="previousButton">Previous hash list</button>
+			<button id="randomButton">Random hash list</button>
+			<button id="nextButton">Next hash list</button>
+		</div>
+		<iframe src=""></iframe>
+
+		<script>
+			// On page load
+			window.addEventListener("load", function () {
+				let htmlFiles = [];
+				let currentIndex = 0;
+
+				const currentPathElement = document.getElementById("currentPath");
+				const previousButton = document.getElementById("previousButton");
+				const randomButton = document.getElementById("randomButton");
+				const nextButton = document.getElementById("nextButton");
+				const iframe = document.querySelector("iframe");
+
+				// Fetch contents of the GitHub API
+				fetch(
+					"https://api.github.com/repos/debridmediamanager/hashlists/contents"
+				)
+					.then((response) => response.json())
+					.then((data) => {
+						// Get all entries with "path" ending in ".html"
+						htmlFiles = data.filter(
+							(entry) => !entry.path.endsWith("index.html")
+						);
+						const randomIndex = Math.floor(Math.random() * htmlFiles.length);
+						currentIndex = randomIndex;
+						// Load the first path in the iframe
+						loadPathAtIndex(currentIndex);
+					})
+					.catch((error) => {
+						console.error("Error:", error);
+					});
+
+				function loadPathAtIndex(index) {
+					const path = htmlFiles[index].path;
+					iframe.src = path;
+					currentPathElement.textContent = path;
+					updateButtonStates();
+				}
+
+				function updateButtonStates() {
+					previousButton.disabled = currentIndex === 0;
+					randomButton.disabled = htmlFiles.length <= 1;
+					nextButton.disabled = currentIndex === htmlFiles.length - 1;
+				}
+
+				previousButton.addEventListener("click", function () {
+					if (currentIndex > 0) {
+						currentIndex--;
+						loadPathAtIndex(currentIndex);
+					}
+				});
+
+				randomButton.addEventListener("click", function () {
+					const randomIndex = Math.floor(Math.random() * htmlFiles.length);
+					currentIndex = randomIndex;
+					loadPathAtIndex(currentIndex);
+				});
+
+				nextButton.addEventListener("click", function () {
+					if (currentIndex < htmlFiles.length - 1) {
+						currentIndex++;
+						loadPathAtIndex(currentIndex);
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
