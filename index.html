@@ -4,6 +4,12 @@
 		<meta charset="UTF-8" />
 		<title>Debrid Media Manager Hash List</title>
 		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				font-family: sans-serif;
+			}
 			#panel {
 				height: 50px;
 				background-color: #f2f2f2;
@@ -12,7 +18,7 @@
 				padding: 0 10px;
 			}
 
-			#panel span {
+			#panel #currentPath {
 				flex-grow: 1;
 				white-space: nowrap;
 				overflow: hidden;
@@ -32,6 +38,11 @@
 				width: 100%;
 				height: calc(100% - 50px);
 			}
+
+			#close a {
+				font-size: xx-large;
+				text-decoration: none;
+			}
 		</style>
 	</head>
 	<body>
@@ -40,6 +51,7 @@
 			<button id="previousButton">Previous hash list</button>
 			<button id="randomButton">Random hash list</button>
 			<button id="nextButton">Next hash list</button>
+			<span id="close"><a href="https://debridmediamanager.com/">[X]</a></span>
 		</div>
 		<iframe src=""></iframe>
 
@@ -77,7 +89,7 @@
 				function loadPathAtIndex(index) {
 					const path = htmlFiles[index].path;
 					iframe.src = path;
-					currentPathElement.textContent = path;
+					currentPathElement.textContent = "https://hashlists.debridmediamanager.com/"+path;
 					updateButtonStates();
 				}
 
