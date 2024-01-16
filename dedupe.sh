@@ -10,9 +10,9 @@ find . -type f -exec md5 -r {} \; | awk '{print $1 " " $2}' > "$TMP_FILE"
 while read -r hash file
 do
     # Check for files with the same hash
-    grep -q "^$hash " "$TMP_FILE" && {
+    rg -q "^$hash " "$TMP_FILE" && {
         # Get the list of files with the same hash, sorted by modification time (oldest first)
-        DUPLICATES=$(grep "^$hash " "$TMP_FILE" | cut -d' ' -f2- | xargs -I{} ls -lt "{}" | awk '{if(NR>1) print $NF}')
+        DUPLICATES=$(rg "^$hash " "$TMP_FILE" | cut -d' ' -f2- | xargs -I{} ls -lt "{}" | awk '{if(NR>1) print $NF}')
 
         if [ -n "$DUPLICATES" ]; then
             # Delete all but the newest file if there are duplicates
