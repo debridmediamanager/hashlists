@@ -3,8 +3,10 @@
 # Temporary file to store file hash and file path
 TMP_FILE=$(mktemp)
 
-# Find all files in the directory (excluding directories), compute their hash, and store in temporary file
-find . -type f -exec md5 -r {} \; | awk '{print $1 " " $2}' > "$TMP_FILE"
+# Find all files in the directory (excluding directories), compute their hash, and store in temporary file.
+# lists/ is left out: a list shared twice is stored twice, byte for byte, and
+# each copy is the only data behind its own page (see move-large-lists.py).
+find . \( -path ./.git -o -path ./lists \) -prune -o -type f -exec md5 -r {} \; | awk '{print $1 " " $2}' > "$TMP_FILE"
 
 # Read each line
 while read -r hash file
