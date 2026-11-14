@@ -67,15 +67,18 @@
 				const nextButton = document.getElementById("nextButton");
 				const iframe = document.querySelector("iframe");
 
-				// Fetch contents of the GitHub API
+				// The git tree lists every file; the contents API stops at 1,000 of the 15,000+ lists.
 				fetch(
-					"https://api.github.com/repos/debridmediamanager/hashlists/contents"
+					"https://api.github.com/repos/debridmediamanager/hashlists/git/trees/main"
 				)
 					.then((response) => response.json())
 					.then((data) => {
-						// Get all entries with "path" ending in ".html"
-						htmlFiles = data.filter(
-							(entry) => !entry.path.endsWith("index.html")
+						// Every hash list page, not index.html, README.md or CNAME
+						htmlFiles = data.tree.filter(
+							(entry) =>
+								entry.type === "blob" &&
+								entry.path.endsWith(".html") &&
+								entry.path !== "index.html"
 						);
 						const randomIndex = Math.floor(Math.random() * htmlFiles.length);
 						currentIndex = randomIndex;
